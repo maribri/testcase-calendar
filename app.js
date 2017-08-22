@@ -14,7 +14,7 @@ testApp.controller("MainCtrl", function($scope, $http) {
 testApp.factory("getStatic", function ($http) {
 	return {
 		get: function () {
-			return $http.get("/test.json?v=5");
+			return $http.get("test.json?v=5");
 		}
 	};
 });
@@ -22,7 +22,7 @@ testApp.factory("getStatic", function ($http) {
 testApp.directive("calendar", function(getStatic) {
 	return {
 		restrict: "E",
-		templateUrl: "/app/views/calendar.html?v=6",
+		templateUrl: "app/views/calendar.html?v=6",
 		scope: {
 			selected: "="
 		},
