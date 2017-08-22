@@ -4,91 +4,34 @@
     <title></title>
 	<meta charset="utf-8">
     <link href="node_modules/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link href="libs/bootstrap-datetimepicker/bootstrap-datetimepicker.min.css" rel="stylesheet">
-	
+	<link rel="stylesheet" type="text/css" href="style.css?v=5" />
 	<link rel="stylesheet" type="text/css" href="//cdnjs.cloudflare.com/ajax/libs/font-awesome/4.2.0/css/font-awesome.css" />
-	
-	<style type="text/less">
-		body { font-family:Arial; font-size:14px; }
-		body>span, body>h1 { float:left; width:100%; margin:0; padding:0; margin-bottom:10px; }
-		
-		span { color:#888888;
-			>b { color:black; }
-		}
-		
-		.vertical-centre (@height) { height:@height; line-height:@height !important; display:inline-block; vertical-align:middle; }
-		.border-box { box-sizing:border-box; -moz-box-sizing:border-box; }
-		
-		@border-colour:#CCC;
-		calendar { display:block; .border-box; background:white; width:300px; height: 228px; border:solid 1px @border-colour; margin-bottom:30px;
-			@secondary-colour:#2875C7;
-			@spacing:10px;
-			
-			@icon-width:40px;
-			@header-height:40px;
-			
-			>div.header { float:left; width:100%; background:@secondary-colour; height:@header-height; color:white;
-				>* { .vertical-centre(@header-height); }
-				>i { float:left; width:@icon-width; font-size:1.125em; font-weight:bold; position:relative; .border-box; padding:0 @spacing; cursor:pointer; }
-				>i.fa-angle-left { text-align:left; }
-				>i.fa-angle-right { text-align:right; margin-left:@icon-width*-1; }
-				>span { float:left; width:100%; font-weight:bold; text-transform:uppercase; .border-box; padding-left:@icon-width+@spacing; margin-left:@icon-width*-1; text-align:center; padding-right:@icon-width; color:inherit; }
-			}
-			>div.week { float:left; width:100%; border-top:solid 1px @border-colour;
-				&:first-child { border-top:none; }
-				>span.day { float:left; width:100%/7; .border-box; border-left:solid 1px @border-colour; font-size:0.75em; text-align:center; .vertical-centre(30px); background:white; cursor:pointer; color:black;
-					&:first-child { border-left:none; }
-					&.today { background:#E3F2FF; }
-					&.holiday { background: #ff443f; }
-					&.different-month { color:#C0C0C0; }
-					&.holiday.different-month { background: #ffc8c7; }
-					&.selected { background:@secondary-colour; color:white; }
-				}
-				&.names>span { color:@secondary-colour; font-weight:bold; }
-			}
-		}
-	</style>
 </head>
 
 <body ng-controller="MainCtrl">
 <div class="container main-container">
 	<form action="" class="form-horizontal">
-		<div class="form-group" style="margin-bottom:30px;">
-			<label for="dtp_input1" class="col-md-2 control-label">DateTime Picking</label>
+		<div class="form-group">
+			<label for="dtp_input1" class="col-md-2 control-label">Выбор даты</label>
 			<div class="input-group date form_datetime col-md-5">
-				<input class="form-control" size="16" type="text" value="{{day.format('DD MMMM YYYY, h:mm')}}" readonly>
-				<span class="input-group-addon"><span class="glyphicon glyphicon-remove"></span></span>
-				<span class="input-group-addon"><span class="glyphicon glyphicon-th"></span></span>
+				<input class="form-control" size="16" type="text" value="{{day.selectedFinish.format('DD MMMM YYYY, HH:mm')}}" readonly>
+				<span class="input-group-addon" ng-click="daysShow = !daysShow"><span class="glyphicon glyphicon-th"></span></span>
 			</div>
 			<input type="hidden" id="dtp_input1" value="" /><br/>
 		</div>
 	</form>
-    <calendar selected="day"></calendar>
-	<div>Selected date: <b>{{day.format('DD MMMM YYYY, h:mm')}}</b></div>
-    <!--<form action="" class="form-horizontal"  role="form">
-        <fieldset>
-            <legend>Testcase</legend>
-            <div class="form-group">
-                <label for="dtp_input1" class="col-md-2 control-label">DateTime Picking</label>
-                <div class="input-group date form_datetime col-md-5" data-date="2017-08-16T05:25:07Z" data-date-format="dd MM yyyy - HH:ii p" data-link-field="dtp_input1">
-                    <input class="form-control" size="16" type="text" value="" readonly>
-                    <span class="input-group-addon"><span class="glyphicon glyphicon-remove"></span></span>
-					<span class="input-group-addon"><span class="glyphicon glyphicon-th"></span></span>
-                </div>
-				<input type="hidden" id="dtp_input1" value="" /><br/>
-            </div>
-        </fieldset>
-    </form>-->
+    <div class="calendar-panel col-md-7" ng-show="daysShow">
+	    <calendar selected="day"></calendar>
+    </div>
 </div>
+<!--<div>Selected date: <b>{{day.format('DD MMMM YYYY, HH:mm')}}</b></div>-->
 
 <script src="node_modules/angular/angular.min.js"></script>
-<script src="node_modules/jquery/jquery.min.js" charset="UTF-8"></script>
+<script src="node_modules/jquery/dist/jquery.min.js" charset="UTF-8"></script>
 <script src="node_modules/bootstrap/dist/js/bootstrap.min.js"></script>
-<script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/less.js/1.7.5/less.min.js"></script>
+<script src="node_modules/less/dist/less.min.js"></script>
 <script src="node_modules/moment/moment.js"></script>
 <script src="node_modules/moment/locale/ru.js"></script>
-<!--<script src="libs/bootstrap-datetimepicker/bootstrap-datetimepicker.min.js" charset="UTF-8"></script>
-<script src="libs/bootstrap-datetimepicker/locales/bootstrap-datetimepicker.ru.js" charset="UTF-8"></script>-->
 <script src="app.js"></script>
 
 </body>

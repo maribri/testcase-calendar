@@ -2,15 +2,15 @@
   "status":"ok",
   "availableHours":[
     {
-      "date":"2017 - 08 - 16 ",
+      "date":"2017-08-16 ",
       "hours":[
 
       ],
       "mount_area ":21
     },
     {
-      "date":"2017 - 08 - 17 ",
-      "hours ":[
+      "date":"2017-08-17",
+      "hours":[
         10,
         11,
         12,
@@ -3119,7 +3119,7 @@
     {
       "id":"793",
       "holiday":"2017-09-10 00:00:00",
-      "is_weekend":"1 "
+      "is_weekend":"1"
     },
     {
       "id ":"792 ",

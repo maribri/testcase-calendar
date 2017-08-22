@@ -1,17 +1,26 @@
-<div class="header">
-    <i class="fa fa-angle-left" ng-click="previous()"></i>
-    <span>{{month.format("MMMM, YYYY")}}</span>
-    <i class="fa fa-angle-right" ng-click="next()"></i>
+<div class="calendar-panel__days">
+	<div class="header">
+		<i class="fa fa-angle-left" ng-click="previous()"></i>
+		<span>{{month.format("MMMM, YYYY")}}</span>
+		<i class="fa fa-angle-right" ng-click="next()"></i>
+	</div>
+	<div class="week names">
+		<span class="day">Пн</span>
+		<span class="day">Вт</span>
+		<span class="day">Ср</span>
+		<span class="day">Чт</span>
+		<span class="day">Пт</span>
+		<span class="day">Сб</span>
+		<span class="day">Вс</span>
+	</div>
+	<div class="week" ng-repeat="week in weeks">
+		<span class="day" ng-class="{ disabled: !day.avHours, today: day.isToday, holiday: day.isHoliday, 'different-month': !day.isCurrentMonth, selected: day.date.isSame(selected) }" ng-click="selectDay(day)" ng-repeat="day in week.days">{{day.number}}</span>
+	</div>
 </div>
-<div class="week names">
-    <span class="day">Пн</span>
-    <span class="day">Вт</span>
-    <span class="day">Ср</span>
-    <span class="day">Чт</span>
-    <span class="day">Пт</span>
-    <span class="day">Сб</span>
-    <span class="day">Вс</span>
+<div class="calendar-panel__hours" ng-show="hoursShow">
+	<div class="header">
+		<span>{{selected.format("DD MMMM")}}</span>
+	</div>
+    <span class="hour" ng-click="selectHour(selected,hour.time)" ng-repeat="hour in selected.avHours">{{hour.name}}<br></span>
 </div>
-<div class="week" ng-repeat="week in weeks">
-    <span class="day" ng-class="{ today: day.isToday, holiday: day.isHoliday, 'different-month': !day.isCurrentMonth, selected: day.date.isSame(selected) }" ng-click="select(day)" ng-repeat="day in week.days">{{day.number}}</span>
-</div>
+<div class="calendar-panel__loader" ng-show="notReady"><div class="calendar-panel__message">Ошибка при получении данных с&nbsp;сервера, <br><span class="calendar-panel__load-link" ng-click="setCalendar()">попробуйте еще раз</span></div></div>
