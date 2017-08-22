@@ -20,7 +20,7 @@
 		.border-box { box-sizing:border-box; -moz-box-sizing:border-box; }
 		
 		@border-colour:#CCC;
-		calendar { display:block; .border-box; background:white; width:300px; height: 300px; border:solid 1px @border-colour; margin-bottom:10px;
+		calendar { display:block; .border-box; background:white; width:300px; height: 228px; border:solid 1px @border-colour; margin-bottom:30px;
 			@secondary-colour:#2875C7;
 			@spacing:10px;
 			
@@ -39,7 +39,9 @@
 				>span.day { float:left; width:100%/7; .border-box; border-left:solid 1px @border-colour; font-size:0.75em; text-align:center; .vertical-centre(30px); background:white; cursor:pointer; color:black;
 					&:first-child { border-left:none; }
 					&.today { background:#E3F2FF; }
+					&.holiday { background: #ff443f; }
 					&.different-month { color:#C0C0C0; }
+					&.holiday.different-month { background: #ffc8c7; }
 					&.selected { background:@secondary-colour; color:white; }
 				}
 				&.names>span { color:@secondary-colour; font-weight:bold; }
@@ -50,8 +52,19 @@
 
 <body ng-controller="MainCtrl">
 <div class="container main-container">
+	<form action="" class="form-horizontal">
+		<div class="form-group" style="margin-bottom:30px;">
+			<label for="dtp_input1" class="col-md-2 control-label">DateTime Picking</label>
+			<div class="input-group date form_datetime col-md-5">
+				<input class="form-control" size="16" type="text" value="{{day.format('DD MMMM YYYY, h:mm')}}" readonly>
+				<span class="input-group-addon"><span class="glyphicon glyphicon-remove"></span></span>
+				<span class="input-group-addon"><span class="glyphicon glyphicon-th"></span></span>
+			</div>
+			<input type="hidden" id="dtp_input1" value="" /><br/>
+		</div>
+	</form>
     <calendar selected="day"></calendar>
-	<div>Selected date: <b>{{day.format('dddd, MMMM Do YYYY')}}</b></div>
+	<div>Selected date: <b>{{day.format('DD MMMM YYYY, h:mm')}}</b></div>
     <!--<form action="" class="form-horizontal"  role="form">
         <fieldset>
             <legend>Testcase</legend>
@@ -73,6 +86,7 @@
 <script src="node_modules/bootstrap/dist/js/bootstrap.min.js"></script>
 <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/less.js/1.7.5/less.min.js"></script>
 <script src="node_modules/moment/moment.js"></script>
+<script src="node_modules/moment/locale/ru.js"></script>
 <!--<script src="libs/bootstrap-datetimepicker/bootstrap-datetimepicker.min.js" charset="UTF-8"></script>
 <script src="libs/bootstrap-datetimepicker/locales/bootstrap-datetimepicker.ru.js" charset="UTF-8"></script>-->
 <script src="app.js"></script>

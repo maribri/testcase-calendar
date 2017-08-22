@@ -1,29 +1,30 @@
-var testApp = angular.module('testApp',
+var testApp = angular.module("testApp",
 	[
 		//'ngStorage'
-	])
-	/*.directive('postRepeatDirective', function() {
-	 return function(scope, element, attrs) {
-	 if (scope.$last){
-	 $('.selectpicker').selectpicker('refresh');
-	 }
-	 };
-	 }).directive('integer', function(){
-	 return {
-	 require: 'ngModel',
-	 link: function(scope, ele, attr, ctrl){
-	 ctrl.$parsers.unshift(function(viewValue){
-	 return parseInt(viewValue, 10);
-	 });
-	 }
-	 };
-	 })*/;
+		//'$locale'
+	]);
 
-testApp.controller("MainCtrl", function($scope) {
+testApp.controller("MainCtrl", function($scope, $http, getStatic, $locale) {
+	//moment.locale('ru');
 	$scope.day = moment();
+	//$scope.localeId = 'ru';
+	
+	getStatic.get().then(function (msg) {
+		$scope.staticData = msg.data;
+	});
+	//console.log($scope.staticData/*,$scope.staticData.holidays,$scope.staticData.availableHours*/);
 });
 
-testApp.directive("calendar", function() {
+testApp.factory("getStatic", function ($http) {
+	return {
+		get: function () {
+			//console.log("inside function");
+			return $http.get("test.json");
+		}
+	};
+});
+
+testApp.directive("calendar", function(getStatic) {
 	return {
 		restrict: "E",
 		templateUrl: "app/views/calendar.html",
@@ -38,24 +39,52 @@ testApp.directive("calendar", function() {
 			start.date(1);
 			_removeTime(start.day(0));
 			
-			_buildMonth(scope, start, scope.month);
+			getStatic.get().then(function (msg) {
+				//console.log(msg.data.holidays);
+				scope.holidays = [];
+				for (var i = 0; i < msg.data.holidays.length; i++) {
+					if (msg.data.holidays[i].is_weekend === "1" && msg.data.holidays[i].holiday !== undefined) {
+						scope.holidays.push(msg.data.holidays[i].holiday.substring(0, 10));
+					}
+				}
+				_buildMonth(scope, start, scope.month, scope.holidays);
+			});
+			
+			
 			
 			scope.select = function(day) {
 				scope.selected = day.date;
+				scope.selected.avHours = [];
+				getStatic.get().then(function (msg) {
+					//console.log(day,msg.data.availableHours,day.date.format("YYYY-MM-DD"));
+					let obj = msg.data.availableHours.find(o => o.date === day.date.format("YYYY-MM-DD"));
+					if (!obj || obj.hours === []) {
+						console.log('soryan');
+					} else {
+						//console.log(obj.hours);
+						scope.selected.avHours = obj.hours;
+					}
+					/*for (var i = 0; i < msg.data.holidays.length; i++) {
+						if (msg.data.holidays[i].is_weekend === "1" && msg.data.holidays[i].holiday !== undefined) {
+							scope.holidays.push(msg.data.holidays[i].holiday.substring(0, 10));
+						}
+					}*/
+					console.log(scope.selected.avHours);
+				});
 			};
 			
 			scope.next = function() {
 				var next = scope.month.clone();
 				_removeTime(next.month(next.month()+1).date(1));
 				scope.month.month(scope.month.month()+1);
-				_buildMonth(scope, next, scope.month);
+				_buildMonth(scope, next, scope.month, scope.holidays);
 			};
 			
 			scope.previous = function() {
 				var previous = scope.month.clone();
 				_removeTime(previous.month(previous.month()-1).date(1));
 				scope.month.month(scope.month.month()-1);
-				_buildMonth(scope, previous, scope.month);
+				_buildMonth(scope, previous, scope.month, scope.holidays);
 			};
 		}
 	};
@@ -64,27 +93,31 @@ testApp.directive("calendar", function() {
 		return date.day(0).hour(0).minute(0).second(0).millisecond(0);
 	}
 	
-	function _buildMonth(scope, start, month) {
+	
+	
+	function _buildMonth(scope, start, month, holidays) {
 		scope.weeks = [];
 		var done = false, date = start.clone(), monthIndex = date.month(), count = 0;
 		while (!done) {
-			scope.weeks.push({ days: _buildWeek(date.clone(), month) });
+			scope.weeks.push({ days: _buildWeek(scope, date.clone(), month, holidays) });
 			date.add(1, "w");
 			done = count++ > 2 && monthIndex !== date.month();
 			monthIndex = date.month();
 		}
 	}
 	
-	function _buildWeek(date, month) {
+	function _buildWeek(scope, date, month, holidays) {
 		var days = [];
 		for (var i = 0; i < 7; i++) {
 			days.push({
 				name: date.format("dd").substring(0, 1),
 				number: date.date(),
 				isCurrentMonth: date.month() === month.month(),
+				isHoliday: holidays.indexOf(date.format("YYYY-MM-DD")) !== -1,
 				isToday: date.isSame(new Date(), "day"),
 				date: date
 			});
+			
 			date = date.clone();
 			date.add(1, "d");
 		}
@@ -92,79 +125,11 @@ testApp.directive("calendar", function() {
 	}
 });
 
-/*testApp.directive("calendar", function () {
-	return {
-		restrict: "E",
-	templateUrl: "app/views/calendar.html",
-	controller: 'rendezvousController',
-	controllerAs: 'rendezvousCtrl',
-	bindToController: true,
-		
-		link: function(scope) {
-		scope.selected = _removeTime(scope.selected || moment());
-		scope.month = scope.selected.clone();
-		
-		var start = scope.selected.clone();
-		start.date(1);
-		_removeTime(start.day(0));
-		
-		_buildMonth(scope, start, scope.month);
-		
-		scope.select = function(day) {
-			scope.selected = day.date;
-		};
-		
-		scope.next = function() {
-			var next = scope.month.clone();
-			_removeTime(next.month(next.month()+1).date(1));
-			scope.month.month(scope.month.month()+1);
-			_buildMonth(scope, next, scope.month);
-		};
-		
-		scope.previous = function() {
-			var previous = scope.month.clone();
-			_removeTime(previous.month(previous.month()-1).date(1));
-			scope.month.month(scope.month.month()-1);
-			_buildMonth(scope, previous, scope.month);
-		};
-	}
-};
-	
-	function _removeTime(date) {
-		return date.day(0).hour(0).minute(0).second(0).millisecond(0);
-	}
-	
-	function _buildMonth(scope, start, month) {
-		scope.weeks = [];
-		var done = false, date = start.clone(), monthIndex = date.month(), count = 0;
-		while (!done) {
-			scope.weeks.push({ days: _buildWeek(date.clone(), month) });
-			date.add(1, "w");
-			done = count++ > 2 && monthIndex !== date.month();
-			monthIndex = date.month();
-		}
-	}
-	
-	function _buildWeek(date, month) {
-		var days = [];
-		for (var i = 0; i < 7; i++) {
-			days.push({
-				name: date.format("dd").substring(0, 1),
-				number: date.date(),
-				isCurrentMonth: date.month() === month.month(),
-				isToday: date.isSame(new Date(), "day"),
-			date: date
-		});
-			date = date.clone();
-			date.add(1, "d");
-		}
-		return days;
-	}
-});*/
-
 
 
 testApp.controller('MainCtrl2', function ($scope, $http, /*$localStorage,*/ $q, Friend) {
+	
+	
 	/*console.log('ItemsListCtrl');
 	var self = this;
 	$scope.msg = null;
@@ -437,11 +402,3 @@ testApp.controller('MainCtrl2', function ($scope, $http, /*$localStorage,*/ $q, 
  return value;
  };
  });*/
-testApp.factory('Friend', function ($http) {
-	return {
-		get: function () {
-			console.log("inside function");
-			return $http.get('test.json');
-		}
-	};
-});
