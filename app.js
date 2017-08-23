@@ -1,14 +1,14 @@
-var testApp = angular.module("testApp",
-	[
-		//'ngStorage'
-		//'$locale'
-	]);
+var testApp = angular.module("testApp", []);
 
-testApp.controller("MainCtrl", function($scope, $http) {
-	$scope.daysShow = false;
-	$scope.hoursShow = false;
+testApp.controller("MainCtrl", function($scope, $rootScope, $http) {
 	$scope.day = moment();
 	$scope.day.selectedFinish;
+	
+	$scope.controls  = {
+		showHideCalendar: function() {
+			$rootScope.daysShow = !$rootScope.daysShow;
+		}
+	}
 });
 
 testApp.factory("getStatic", function ($http) {
@@ -50,26 +50,12 @@ testApp.directive("calendar", function(getStatic) {
 					} else {
 						scope.notReady = true;
 					}
-				}).catch(function (error) {   // use catch instead of error
+				}).catch(function (error) {
 					console.log("error");
 					scope.notReady = true;
 				});
 			};
 			scope.setCalendar();
-			
-			scope.selectDay = function(day) {
-				if (!day.avHours) return false;
-				scope.selected = day.date;
-				scope.selected.avHours = day.avHours;
-				scope.hoursShow = true;
-			};
-			
-			scope.selectHour = function(day,hour) {
-				day.hours(hour);
-				day.selectedFinish = day;
-				$scope.daysShow = false;
-				scope.hoursShow = false;
-			};
 			
 			scope.next = function() {
 				var next = scope.month.clone();
@@ -84,7 +70,22 @@ testApp.directive("calendar", function(getStatic) {
 				scope.month.month(scope.month.month()-1);
 				_buildMonth(scope, previous, scope.month, scope.holidays);
 			};
-		}
+		},
+		controller: ['$rootScope', '$scope', function ($rootScope, $scope) {
+			$scope.selectHour = function(day, hour) {
+				day.hours(hour);
+				day.selectedFinish = day;
+				$rootScope.daysShow = false;
+				$scope.hoursShow = false;
+			};
+			
+			$scope.selectDay = function(day) {
+				if (!day.avHours) return false;
+				$scope.selected = day.date;
+				$scope.selected.avHours = day.avHours;
+				$scope.hoursShow = true;
+			};
+		}]
 	};
 	
 	function _removeTime(date) {

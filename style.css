@@ -35,7 +35,7 @@ span >b {
 }
 calendar {
   position: absolute;
-  top: -15px;
+  top: 0;
   right: 0;
   box-sizing: border-box;
   -moz-box-sizing: border-box;
